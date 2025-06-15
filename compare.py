@@ -46,8 +46,9 @@ def main():
     # Clean each item in system_rules to remove non-alphanumeric characters
     cleaned_system_rules = []
     for text in system_rules:
-        text = text.rsplit(',', 1)[0] if ',' in text else text
 
+
+        text = re.sub( r'\s*[,]\s*[א-ת"׳]+\s*([-–]\s*)?\d{4}\s*$', '', text)
 
 
         # The issue is that the current regex pattern is looking for ']נוסח' followed by any characters until '['
