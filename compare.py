@@ -30,8 +30,7 @@ def main():
     # Clean each item in law_texts to remove non-alphanumeric characters
     cleaned_law_texts = []
     for text in law_texts:
-        cleaned_text = re.sub(r'[^a-zA-Zא-ת0-9]', '', text)
-        cleaned_law_texts.append(cleaned_text)
+        cleaned_law_texts.append(text.strip())
 
 
 
@@ -46,52 +45,31 @@ def main():
     # Clean each item in system_rules to remove non-alphanumeric characters
     cleaned_system_rules = []
     for text in system_rules:
-
-
         text = re.sub( r'\s*[,]\s*[א-ת"׳]+\s*([-–]\s*)?\d{4}\s*$', '', text)
-
-
-        # The issue is that the current regex pattern is looking for ']נוסח' followed by any characters until '['
-        # To catch '[נוסח משולב]', we need to modify the pattern to look for the full phrase
-###        text = re.sub(r'נוסח משולב', '', text)
-###        text = re.sub(r'נוסח חדש', '', text)
-
         text=re.sub(r'\[נוסח [^\]]*\]', '', text)
-
-
-
-
-
-        cleaned_text = re.sub(r'[^a-zA-Zא-ת0-9]', '', text)
-        cleaned_system_rules.append(cleaned_text)
-
+        cleaned_system_rules.append(text.strip())
 
     # Find rules in system_rules that are not in law_texts
-    missing_rules = []
-    for i, cleaned_rule in enumerate(cleaned_system_rules):
-        
-        # Check if the rule is similar to any existing rule using Levenshtein distance
-        is_similar = False
-        for existing_rule in cleaned_law_texts:
-            # Calculate Levenshtein distance between the two strings
-            distance = Levenshtein.distance(cleaned_rule, existing_rule)
-            # If the distance is small relative to the length of the strings, consider them similar
-            if distance <= 3 and len(cleaned_rule) > 5:  # Only consider strings longer than 5 characters
-                is_similar = True
+    existing_rules = []
+    
+    for i,viki_rule in enumerate(cleaned_law_texts):
+        for j,system_rule in enumerate(cleaned_system_rules):
+            distance = Levenshtein.distance(re.sub(r'[^a-zA-Zא-ת0-9]', '', system_rule.split("*^*")[1]), re.sub(r'[^a-zA-Zא-ת0-9]', '', viki_rule))
+            if distance < 3 and len(system_rule.split("*^*")[1]) > 5:  # Only consider strings longer than 5 characters
+                rule_c_and_name = system_rule.split("*^*")[0]+"*&*"+viki_rule
+                existing_rules.append(rule_c_and_name)
                 break
         
-        if is_similar:
-            continue
-        
-        missing_rules.append(system_rules[i])
     
-    # Print the missing rules with their original names
     
-    # Create DataFrame with missing rules
-    df = pd.DataFrame(missing_rules, columns=['Rule Name'])
+    # Create DataFrame with existing rules
+
+    # Split each item in existing_rules by '*&*' and create separate columns
+    split_rules = [rule.split('*&*') for rule in existing_rules]
+    df = pd.DataFrame(split_rules, columns=['Rule Index', 'Rule Name'])
     
     # Save to Excel file
-    df.to_excel('missing_rules_main_sub_rules.xlsx', index=False)
+    df.to_excel('existing_rules.xlsx', index=False)
 
     print (f"✓ finished")
 
