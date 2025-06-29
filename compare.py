@@ -30,6 +30,7 @@ def main():
     # Clean each item in law_texts to remove non-alphanumeric characters
     cleaned_law_texts = []
     for text in law_texts:
+        text=re.sub(r'\(\s*החדשות\s*\)', '', text)
         cleaned_law_texts.append(text.strip())
 
 
@@ -59,8 +60,6 @@ def main():
                 rule_c_and_name = system_rule.split("*^*")[0]+"*&*"+viki_rule
                 existing_rules.append(rule_c_and_name)
                 break
-        
-    
     
     # Create DataFrame with existing rules
 
@@ -69,7 +68,7 @@ def main():
     df = pd.DataFrame(split_rules, columns=['Rule Index', 'Rule Name'])
     
     # Save to Excel file
-    df.to_excel('existing_rules.xlsx', index=False)
+    df.to_excel('existing_rules_2.xlsx', index=False)
 
     print (f"✓ finished")
 
