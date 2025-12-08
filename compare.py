@@ -46,17 +46,22 @@ def main():
     # Clean each item in system_rules to remove non-alphanumeric characters
     cleaned_system_rules = []
     for text in system_rules:
-        text = re.sub( r'\s*[,]\s*[א-ת"׳]+\s*([-–]\s*)?\d{4}\s*$', '', text)
+        text = re.sub( r'\s*[,]\s*[א-ת"׳]+\s*([-–]\s*)?\d{2,6}\s*$', '', text)
         text=re.sub(r'\[נוסח [^\]]*\]', '', text)
         cleaned_system_rules.append(text.strip())
 
     # Find rules in system_rules that are not in law_texts
     existing_rules = []
-    
+        
     for i,viki_rule in enumerate(cleaned_law_texts):
+        if "כימיות וביולוגיות" in viki_rule: #for debugging
+            m=1
         for j,system_rule in enumerate(cleaned_system_rules):
+            if "כימיות וביולוגיות" in system_rule: #for debugging
+                m=2
+
             distance = Levenshtein.distance(re.sub(r'[^a-zA-Zא-ת0-9]', '', system_rule.split("*^*")[1]), re.sub(r'[^a-zA-Zא-ת0-9]', '', viki_rule))
-            if distance < 3 and len(system_rule.split("*^*")[1]) > 5:  # Only consider strings longer than 5 characters
+            if (distance < 3 and len(system_rule.split("*^*")[1]) > 20) or (distance < 2 and len(system_rule.split("*^*")[1]) > 5 ):  # Only consider strings longer than 5 characters
                 rule_c_and_name = system_rule.split("*^*")[0]+"*&*"+viki_rule
                 existing_rules.append(rule_c_and_name)
                 break
@@ -68,7 +73,7 @@ def main():
     df = pd.DataFrame(split_rules, columns=['Rule Index', 'Rule Name'])
     
     # Save to Excel file
-    df.to_excel('existing_rules_2.xlsx', index=False)
+    df.to_excel('existing_rules_081225.xlsx', index=False)
 
     print (f"✓ finished")
 

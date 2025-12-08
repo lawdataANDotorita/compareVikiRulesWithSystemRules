@@ -55,12 +55,14 @@ class WikiRulesExtractor:
     def filter_law_related_links(self, anchor_texts: List[str]) -> List[str]:
         """Filter anchor texts to get law-related content."""
         # Keywords that indicate law-related content in Hebrew
+        '''
         law_keywords = [
             'חוק', 'תקנות', 'פקודה', 'צו', 'הוראה', 'חוקה', 'תחיקה',
             'משפט', 'פקודת', 'חוקי', 'תקנת', 'הלכה', 'דין'
         ]
-        
+        '''        
         # Navigation and non-law elements to exclude
+        '''
         exclude_keywords = [
             'לדלג', 'עמוד ראשי', 'ברוכים הבאים', 'שינויים אחרונים', 
             'דף אקראי', 'שער הקהילה', 'עזרה', 'מזנון', 'ארגז חול',
@@ -68,21 +70,24 @@ class WikiRulesExtractor:
             'הדפסה', 'מידע', 'תרומה', 'קישור', 'עריכה', 'היסטוריה',
             'דיון', 'קטגוריה', 'תבנית', 'נושא', 'נושאים', 'רשימה'
         ]
-        
+        '''
         filtered_texts = []
 
         for text in anchor_texts:
             # Skip if it's a navigation element
-            if any(exclude_word in text for exclude_word in exclude_keywords):
-                continue
+            # if any(exclude_word in text for exclude_word in exclude_keywords):
+            #    continue
                 
             # Include if it contains law-related keywords
-            if any(keyword in text for keyword in law_keywords):
-                filtered_texts.append(text)
+            # if any(keyword in text for keyword in law_keywords):
+            #    filtered_texts.append(text)
             
+            filtered_texts.append(text)
+
+
             # Also include if it looks like a year pattern (law format)
-            if re.search(r'התש[נסעפצקרש]"[א-ת]-\d{4}', text):
-                filtered_texts.append(text)
+            # if re.search(r'התש[נסעפצקרש]"[א-ת]-\d{4}', text):
+            #    filtered_texts.append(text)
 
         print(f"Filtered to {len(filtered_texts)} law-related anchor texts")
         return filtered_texts
