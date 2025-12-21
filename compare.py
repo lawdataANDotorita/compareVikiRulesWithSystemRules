@@ -61,9 +61,10 @@ def main():
 
         text2=re.sub(r'[\[(]נוסח [^\])]*[\])]', '', text2)
         text2 = re.sub(r'[^\(\)[\]\{\}a-zA-Zא-ת0-9]*[ה]?תש([\'"״”]+|.[\'"״”]+)[^\(\)]+\d+[^\(\)[\]\{\}a-zA-Zא-ת0-9]*$', '', text2)
+        text2 = re.sub(r',\s*\d{4}$', '', text2)
 
+        cleaned_system_rules.append(text2.strip())
         if text != text2 :
-            cleaned_system_rules.append(text2.strip())
             rules_variations.append({
                 'textOrg': textOrg,
                 'text': text,
